@@ -20,16 +20,15 @@
         <lightning-layout-item size="12" class="slds-p-top_small slds-is-relative">
             
           <!-- Spinner is shown if isLoading is true -->
+
             <template if:true={isLoading}>
                 <div class="slds-spinner_container">
                     <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
                 </div>
             </template>
 
-            <!-- boatSearchResults is shown if isLoading is false -->
-            <template if:false={isLoading}>
-                <!-- <c-boat-search-results onloading={handleLoading} ondoneloading={handleDoneLoading}></c-boat-search-results> -->
-            </template>
+            <!-- boatSearchResults is shown -->
+            <c-boat-search-results onloading={handleLoading} ondoneloading={handleDoneLoading}></c-boat-search-results>
 
         </lightning-layout-item>
 
