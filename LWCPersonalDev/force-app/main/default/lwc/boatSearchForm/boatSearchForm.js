@@ -10,7 +10,7 @@ export default class BoatSearchForm extends LightningElement {
     // Private
     error = undefined;
     
-    @track searchOptions;
+    searchOptions;
     
     // Wire a custom Apex method getBoatTypes
     @wire(getBoatTypes) 
