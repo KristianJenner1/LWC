@@ -20,7 +20,7 @@ export default class BoatsNearMe extends LightningElement {
     center = {};
     
     isLoading = true;
-    isRendered = false;
+    isRendered;
 
     // user's location
     latitude;
@@ -32,18 +32,19 @@ export default class BoatsNearMe extends LightningElement {
     @wire(getBoatsByLocation, { latitude: '$latitude', longitude: '$longitude', boatTypeId: '$boatTypeId' })
     wiredBoatsJSON({error, data}) { 
         if (data) {
+            this.isLoading = false;
             // Call createMapMarkers
             this.createMapMarkers(data);
         } else if (error) {
+            this.isLoading = false;
             // Disply error message in toast
             this.dispatchEvent(
                 new showToastEvent({
                     title: ERROR_TITLE,
-                    message: error.body.message,
+                    message: error.message,
                     variant: ERROR_VARIANT
                 })
             );
-            this.isLoading = false;
         }
     }
     
@@ -52,8 +53,8 @@ export default class BoatsNearMe extends LightningElement {
     renderedCallback() { 
         if (!this.isRendered) {
             this.getLocationFromBrowser();
+            this.isRendered = true;
         }
-        this.isRendered = true;
     }
     
     // Gets the location from the Browser
@@ -78,7 +79,7 @@ export default class BoatsNearMe extends LightningElement {
     
     // Creates the map markers
     createMapMarkers(boatData) {
-        this.mapMarkers = JSON.parse(boatData).map(boat => {
+        const newMarkers = JSON.parse(boatData).map(boat => {
             return {
                 title: boat.Name,
                 location: {
@@ -88,7 +89,7 @@ export default class BoatsNearMe extends LightningElement {
             };
         });
         // add label to the first marker for the user's location
-        this.mapMarkers.unshift({
+        newMarkers.unshift({
             title: LABEL_YOU_ARE_HERE,
             icon: ICON_STANDARD_USER,
             location: {
@@ -96,6 +97,7 @@ export default class BoatsNearMe extends LightningElement {
                 Longitude: this.longitude
             }
         });
+        this.mapMarkers = newMarkers;
         this.isLoading = false;
     }
 
