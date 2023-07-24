@@ -17,6 +17,7 @@ export default class BoatsNearMe extends LightningElement {
     @api boatTypeId;
     
     mapMarkers = [];
+    center = {};
     
     isLoading = true;
     isRendered = false;
@@ -33,16 +34,16 @@ export default class BoatsNearMe extends LightningElement {
         if (data) {
             // Call createMapMarkers
             this.createMapMarkers(data);
-            this.isLoading = false;
         } else if (error) {
             // Disply error message in toast
             this.dispatchEvent(
                 new showToastEvent({
                     title: ERROR_TITLE,
-                    message: error.message,
+                    message: error.body.message,
                     variant: ERROR_VARIANT
                 })
             );
+            this.isLoading = false;
         }
     }
     
@@ -63,6 +64,13 @@ export default class BoatsNearMe extends LightningElement {
                 position => {
                     this.latitude = position.coords.latitude;
                     this.longitude = position.coords.longitude;
+                    // set center of map to user's location
+                    this.center = {
+                        location: {
+                            Latitude: position.coords.latitude,
+                            Longitude: position.coords.longitude
+                        },
+                    };
                 }
             );
         }
@@ -70,26 +78,25 @@ export default class BoatsNearMe extends LightningElement {
     
     // Creates the map markers
     createMapMarkers(boatData) {
-        const newMarkers = JSON.parse(boatData).map(boat => {
+        this.mapMarkers = JSON.parse(boatData).map(boat => {
             return {
+                title: boat.Name,
                 location: {
                     Latitude: boat.Geolocation__Latitude__s,
                     Longitude: boat.Geolocation__Longitude__s
-                },
-                title: boat.Name
+                }
             };
         });
         // add label to the first marker for the user's location
-        newMarkers.unshift({
+        this.mapMarkers.unshift({
+            title: LABEL_YOU_ARE_HERE,
+            icon: ICON_STANDARD_USER,
             location: {
                 Latitude: this.latitude,
                 Longitude: this.longitude
-            },
-            title: LABEL_YOU_ARE_HERE,
-            icon: ICON_STANDARD_USER
+            }
         });
-        // assign this.mapMarkers to newMarkers
-        this.mapMarkers = newMarkers;
+        this.isLoading = false;
     }
 
 }
