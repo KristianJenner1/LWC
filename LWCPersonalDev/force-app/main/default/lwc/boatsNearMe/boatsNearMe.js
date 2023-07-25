@@ -32,48 +32,43 @@ export default class BoatsNearMe extends LightningElement {
     @wire(getBoatsByLocation, { latitude: '$latitude', longitude: '$longitude', boatTypeId: '$boatTypeId' })
     wiredBoatsJSON({error, data}) { 
         if (data) {
-            this.isLoading = false;
             // Call createMapMarkers
             this.createMapMarkers(data);
         } else if (error) {
-            this.isLoading = false;
             // Disply error message in toast
-            this.dispatchEvent(
-                new showToastEvent({
-                    title: ERROR_TITLE,
-                    message: error.message,
-                    variant: ERROR_VARIANT
-                })
-            );
+            const toast = new showToastEvent({
+                title: ERROR_TITLE,
+                message: error.message,
+                variant: ERROR_VARIANT
+            });
+            this.dispatchEvent(toast);
         }
     }
-    
+     
     // Controls the isRendered property
     // Calls getLocationFromBrowser()
     renderedCallback() { 
         if (!this.isRendered) {
             this.getLocationFromBrowser();
-            this.isRendered = true;
         }
+        this.isRendered = true;
     }
     
     // Gets the location from the Browser
     // position => {latitude and longitude}
     getLocationFromBrowser() {
-        if (navigator.geolocation) { 
-            navigator.geolocation.getCurrentPosition(
-                position => {
-                    this.latitude = position.coords.latitude;
-                    this.longitude = position.coords.longitude;
-                    // set center of map to user's location
-                    this.center = {
-                        location: {
-                            Latitude: position.coords.latitude,
-                            Longitude: position.coords.longitude
-                        },
-                    };
-                }
-            );
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                this.latitude = position.coords.latitude;
+                this.longitude = position.coords.longitude;
+                // set center of map to user's location
+                this.center = {
+                    location: {
+                        Latitude: position.coords.latitude,
+                        Longitude: position.coords.longitude
+                    },
+                };
+            });
         }
     }
     
@@ -97,6 +92,7 @@ export default class BoatsNearMe extends LightningElement {
                 Longitude: this.longitude
             }
         });
+        // assign newMarkers to mapMarkers
         this.mapMarkers = newMarkers;
         this.isLoading = false;
     }
