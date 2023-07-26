@@ -32,16 +32,18 @@ export default class BoatsNearMe extends LightningElement {
     @wire(getBoatsByLocation, { latitude: '$latitude', longitude: '$longitude', boatTypeId: '$boatTypeId' })
     wiredBoatsJSON({error, data}) { 
         if (data) {
-            // Call createMapMarkers
-            this.createMapMarkers(data);
+            // Call createMapMarkers, parse the data returned from the Apex call
+            const boatData = JSON.parse(data);
+            this.createMapMarkers(boatData);
         } else if (error) {
             // Disply error message in toast
             const toast = new showToastEvent({
                 title: ERROR_TITLE,
-                message: error.message,
+                message: error.body.message,
                 variant: ERROR_VARIANT
             });
             this.dispatchEvent(toast);
+            this.isLoading = false;
         }
     }
      
@@ -74,7 +76,7 @@ export default class BoatsNearMe extends LightningElement {
     
     // Creates the map markers
     createMapMarkers(boatData) {
-        const newMarkers = JSON.parse(boatData).map(boat => {
+        const newMarkers = boatData.map(boat => {
             return {
                 title: boat.Name,
                 location: {
