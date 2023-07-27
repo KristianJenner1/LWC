@@ -1,6 +1,7 @@
 // imports
 import { LightningElement, wire, api } from 'lwc';
 import { subscribe, MessageContext, APPLICATION_SCOPE } from 'lightning/messageService';
+import { NavigationMixin } from 'lightning/navigation';
 
 // import getFieldValue from the uiRecordApi
 import { getFieldValue } from 'lightning/uiRecordApi';
@@ -87,9 +88,21 @@ export default class BoatDetailTabs extends LightningElement {
         this.subscribeMC();
     }
     
-    // Navigates to record page
-    navigateToRecordViewPage() { }
+    // Navigates to the boat record page
+    navigateToRecordViewPage() { 
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: this.boatId,
+                objectApiName: 'Boat__c',
+                actionName: 'view'
+            }
+        });
+    }
     
     // Navigates back to the review list, and refreshes reviews component
-    handleReviewCreated() { }
+    handleReviewCreated() { 
+        this.template.querySelector('lightning-tabset').activeTabValue = 'reviews';
+        this.template.querySelector('c-boat-reviews').refresh();
+    }
 }

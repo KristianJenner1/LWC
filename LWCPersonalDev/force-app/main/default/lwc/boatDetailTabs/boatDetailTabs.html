@@ -13,6 +13,8 @@
             <lightning-tab label={label.labelDetails}>
                 <!-- lightning card for the content when wiredRecord has data goes here  -->
                 <lightning-card title={boatName} icon-name={detailsTabIconName} padding="around-small">
+                    <!-- button to navigate to the record view page for the selected boat -->
+                    <lightning-button label={label.labelFullDetails} onclick={navigateToRecordViewPage}  slot="actions"></lightning-button>
                     <div class="slds-m-around-small">
                         <lightning-record-view-form record-id={boatId} object-api-name="Boat__c" density="compact"  padding="around-small">
                             <lightning-output-field field-name="BoatType__c"></lightning-output-field>
@@ -23,6 +25,15 @@
                     </div>
                 </lightning-card>
             </lightning-tab>
+        </lightning-tabset>
+        <!-- lightning-tabset, add a lightning-tab using the custom label Add_Review as the tab label -->
+        <lightning-tabset variant="scoped">
+            <Lightning-tab label={label.labelAddReview}>
+                <div class="slds-m-around_small">
+                    <!-- boatAddReviewForm-->
+                    <!-- <c-boat-add-review-form record-id={boatId} oncreatereview={handleCreateReview}></c-boat-add-review-form> -->
+                </div>
+            </Lightning-tab>
         </lightning-tabset>
     </template>
 </template>
