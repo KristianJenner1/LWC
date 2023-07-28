@@ -33,8 +33,9 @@ import BOAT_NAME_FIELD from '@salesforce/schema/Boat__c.Name';
 // contants
 const BOAT_FIELDS = [BOAT_ID_FIELD, BOAT_NAME_FIELD];
 
-export default class BoatDetailTabs extends LightningElement {
+export default class BoatDetailTabs extends NavigationMixin(LightningElement) {
     
+    // Private
     boatId;
 
     // Wire messageContext for LMS

@@ -1,6 +1,6 @@
 // imports
 import { LightningElement, wire, api } from 'lwc';
-import { showToastEvent } from 'lightning/platformShowToastEvent';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 // import the getBoatsByLocation method from the BoatDataService Apex class
 import getBoatsByLocation from '@salesforce/apex/BoatDataService.getBoatsByLocation';
@@ -37,7 +37,7 @@ export default class BoatsNearMe extends LightningElement {
             this.createMapMarkers(boatData);
         } else if (error) {
             // Disply error message in toast
-            const toast = new showToastEvent({
+            const toast = new ShowToastEvent({
                 title: ERROR_TITLE,
                 message: error.body.message,
                 variant: ERROR_VARIANT
