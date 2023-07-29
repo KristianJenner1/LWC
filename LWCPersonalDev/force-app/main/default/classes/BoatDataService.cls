@@ -107,7 +107,7 @@ public with sharing class BoatDataService
     }
 
     // Method to get the reviews for a boat, Aura enabled to be called by LWC
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<BoatReview__c> getAllReviews(Id boatId) 
     {
         return [
