@@ -55,8 +55,8 @@ export default class BoatDetailTabs extends NavigationMixin(LightningElement) {
     
     // Decide when to show or hide the icon
     // returns 'utility:anchor' or null
-    get detailsTabIconName() { 
-        return this.boatId ? 'utility:anchor' : null;
+    get detailsTabIconName() {
+        return this.wiredRecord ? 'utility:anchor' : null;
     }
     
     // Utilize getFieldValue to extract the boat name from the record wire

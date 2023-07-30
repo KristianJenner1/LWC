@@ -26,12 +26,20 @@
                     </div>
                 </lightning-card>
             </lightning-tab>
+
+            <!-- Reviews tab -->
+            <lightning-tab label={label.labelReviews} value='reviews'>
+                <div class="slds-m-around_small">
+                    <!-- boatReviews -->
+                    <c-boat-reviews record-id={boatId}></c-boat-reviews>
+                </div>
+            </lightning-tab>
             
             <!-- Add Review tab -->
             <Lightning-tab label={label.labelAddReview}>
                 <div class="slds-m-around_small">
                     <!-- boatAddReviewForm-->
-                    <c-boat-add-review-form record-id={boatId} oncreatereview={handleCreateReview}></c-boat-add-review-form>
+                    <c-boat-add-review-form record-id={boatId} oncreatereview={handleReviewCreated}></c-boat-add-review-form>
                 </div>
             </Lightning-tab>
 
