@@ -1,9 +1,13 @@
 // imports
 import { LightningElement, wire, api } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { publish, MessageContext } from 'lightning/messageService';
 
 // import the getBoatsByLocation method from the BoatDataService Apex class
 import getBoatsByLocation from '@salesforce/apex/BoatDataService.getBoatsByLocation';
+
+// import the Boat message channel
+import BOATMC from '@salesforce/messageChannel/BoatMessageChannel__c';
 
 // constants
 const LABEL_YOU_ARE_HERE = 'You are here!';
@@ -15,6 +19,8 @@ export default class BoatsNearMe extends LightningElement {
 
     // public
     @api boatTypeId;
+
+    selectedBoatId; // Id of boat selected in the map
     
     mapMarkers = [];
     center = {};
@@ -25,6 +31,10 @@ export default class BoatsNearMe extends LightningElement {
     // user's location
     latitude;
     longitude;
+
+    // wired message context
+    @wire(MessageContext)
+    messageContext;
     
     // Add the wired method from the Apex Class
     // Name it getBoatsByLocation, and use latitude, longitude and boatTypeId
@@ -79,6 +89,7 @@ export default class BoatsNearMe extends LightningElement {
         const newMarkers = boatData.map(boat => {
             return {
                 title: boat.Name,
+                value: boat.Id, // required for marker selection
                 location: {
                     Latitude: boat.Geolocation__Latitude__s,
                     Longitude: boat.Geolocation__Longitude__s
@@ -99,4 +110,19 @@ export default class BoatsNearMe extends LightningElement {
         this.isLoading = false;
     }
 
+    // Publishes the boat Id selected when a map marker is selected
+    handleMarkerSelect(event) {
+        // Get the marker details and assign them to selectedBoatId
+        const markerDetails = event.target;
+        this.selectedBoatId = markerDetails.selectedMarkerValue;
+        // Publish the selected boat Id on the BoatMC.
+        this.sendMessageService(this.selectedBoatId);
+    }
+
+    // Publishes the selected boat Id on the BoatMC.
+    sendMessageService(boatId) { 
+        // explicitly pass boatId to the parameter recordId
+        publish(this.messageContext, BOATMC, { recordId: boatId });
+
+    }
 }

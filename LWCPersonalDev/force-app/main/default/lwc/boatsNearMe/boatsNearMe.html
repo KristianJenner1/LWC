@@ -15,7 +15,9 @@
         <template if:true={isRendered}>
             <lightning-map 
                 map-markers={mapMarkers} 
-                center={center}>
+                center={center}
+                onmarkerselect={handleMarkerSelect}
+                >
             </lightning-map>
             <div slot="footer">Top 10 Only!</div>
         </template>
