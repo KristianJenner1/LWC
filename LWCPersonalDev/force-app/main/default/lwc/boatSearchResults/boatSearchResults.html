@@ -1,5 +1,9 @@
+<!-- Description: Boat Search Results, displays the list of boats -->
 <template>
+    <!-- Tabset for the three tabs, Gallery, Boat Editor, and Boats Near Me -->
     <lightning-tabset variant="scoped">
+        
+        <!-- Gallery tab -->
         <lightning-tab label="Gallery">
             <!-- only show if there are boats -->
             <template if:true={boats}>
@@ -19,6 +23,8 @@
                 </div>
             </template>
         </lightning-tab>
+        
+        <!-- Boat Editor tab -->
         <lightning-tab label="Boat Editor">
             <!-- Scrollable div and lightning datatable go here -->
             <template if:true={boats}>
@@ -36,10 +42,13 @@
                 </div>
             </template>
         </lightning-tab>
+        
+        <!-- Boats Near Me tab -->
         <lightning-tab label="Boats Near Me">
             <!-- boatsNearMe component goes here -->
             <c-boats-near-me boat-type-id={boatTypeId}></c-boats-near-me>
         </lightning-tab>
+        
     </lightning-tabset>
 </template>
   

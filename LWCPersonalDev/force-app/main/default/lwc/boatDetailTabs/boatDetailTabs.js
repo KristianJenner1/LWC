@@ -37,14 +37,7 @@ export default class BoatDetailTabs extends NavigationMixin(LightningElement) {
     
     // Private
     boatId;
-
-    // Wire messageContext for LMS
-    @wire(MessageContext)
-    messageContext;
-    
-    @wire(getRecord, { recordId: '$boatId', fields: BOAT_FIELDS })
-    wiredRecord;
-    
+    subscription = null;
     label = {
         labelDetails,
         labelReviews,
@@ -52,6 +45,14 @@ export default class BoatDetailTabs extends NavigationMixin(LightningElement) {
         labelFullDetails,
         labelPleaseSelectABoat,
     };
+
+    // Wire messageContext for LMS
+    @wire(MessageContext)
+    messageContext;
+    
+    // Wire getRecord for the boatId property (reactive)
+    @wire(getRecord, { recordId: '$boatId', fields: BOAT_FIELDS })
+    wiredRecord;
     
     // Decide when to show or hide the icon
     // returns 'utility:anchor' or null
@@ -64,9 +65,6 @@ export default class BoatDetailTabs extends NavigationMixin(LightningElement) {
         // return the boatName field value
         return getFieldValue(this.wiredRecord.data, BOAT_NAME_FIELD);
     }
-    
-    // Private
-    subscription = null;
     
     // Subscribe to the message channel
     subscribeMC() {

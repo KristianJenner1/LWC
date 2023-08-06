@@ -35,7 +35,7 @@ export default class BoatSearchResults extends LightningElement {
     boatTypeId = '';
     boats;
     
-    columns = COLS;
+    columns = COLS; // reference constant COLS, defined above, for the datatable columns
     
     isLoading = false;
     error = undefined;

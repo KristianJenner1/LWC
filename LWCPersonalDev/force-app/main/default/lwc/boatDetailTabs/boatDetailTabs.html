@@ -1,4 +1,7 @@
+<!-- Description: BoatDetailTabs component, displays tabs with details of a boat, its reviews, and a review form to add a new review. -->
 <template>
+    
+    <!-- Display a message when there is no boat selected -->
     <template if:false={wiredRecord.data}>
         <!-- lightning card for the label when wiredRecord has no data goes here  -->
         <lightning-card>
@@ -7,6 +10,8 @@
             </span>
         </lightning-card>
     </template>
+    
+    <!-- Display tabs when a boat is selected -->
     <template if:true={wiredRecord.data}>
         <lightning-tabset variant="scoped">
             

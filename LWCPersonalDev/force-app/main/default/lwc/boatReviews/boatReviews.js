@@ -14,10 +14,10 @@ export default class BoatReviews extends NavigationMixin(LightningElement) {
     boatReviews;
 
     // getter and setter for recordId
+    @api
     get recordId() {
         return this.boatId;
     }
-    @api
     set recordId(value) {
         // sets boatId attribute
         this.setAttribute('boatId', value);        
