@@ -3,7 +3,7 @@ import { LightningElement } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 
 export default class BoatSearch extends NavigationMixin(LightningElement) {
-    
+
     // private properties
     isLoading = false;
     
@@ -23,9 +23,12 @@ export default class BoatSearch extends NavigationMixin(LightningElement) {
         
         // Create variable boatTypeId and assign the value from the event detail
         let boatTypeId = event.detail.boatTypeId;
+        
+        // Create variable maxPrice and assign the value from the event detail
+        let maxPrice = event.detail.maxPrice;
 
         // Call the searchBoats function from the boatSearchResults component to perform the search and show the results
-        this.template.querySelector('c-boat-search-results').searchBoats(boatTypeId);
+        this.template.querySelector('c-boat-search-results').searchBoats(boatTypeId,maxPrice);
 
         // Call the handleDoneLoading function
         this.handleDoneLoading();
