@@ -2,17 +2,14 @@
 import { LightningElement, track, wire } from 'lwc';
 import getBoatTypes from '@salesforce/apex/BoatDataService.getBoatTypes';
 
-
 export default class BoatSearchForm extends LightningElement {
     
-    selectedBoatTypeId = '';
-    
     // Private
+    selectedBoatTypeId = '';
     error = undefined;
-    
     searchOptions;
     
-    // Wire a custom Apex method getBoatTypes
+    // Wire the Apex method getBoatTypes to populate searchOptions
     @wire(getBoatTypes) 
     boatTypes({ error, data }) {
         if (data) {
