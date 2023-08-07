@@ -22,6 +22,15 @@
                     </lightning-layout>
                 </div>
             </template>
+            <!-- only show if there are no boats -->
+            <template if:true={noBoats}>
+                <lightning-card>
+                    <span class="slds-align_absolute-center">
+                        <p>No boats match the filters, please adjust the filter cirteria</p>
+                    </span>
+                </lightning-card>
+            </template>
+
         </lightning-tab>
         
         <!-- Boat Editor tab -->
@@ -48,7 +57,7 @@
             <!-- boatsNearMe component goes here -->
             <c-boats-near-me boat-type-id={boatTypeId}></c-boats-near-me>
         </lightning-tab>
-        
+
     </lightning-tabset>
 </template>
   

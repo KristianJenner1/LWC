@@ -33,6 +33,7 @@ export default class BoatSearchResults extends LightningElement {
     @api selectedBoatId;
 
     boatTypeId = '';
+    maxPrice = 1000000;
     boats;
     
     columns = COLS; // reference constant COLS, defined above, for the datatable columns
@@ -45,8 +46,8 @@ export default class BoatSearchResults extends LightningElement {
     @wire(MessageContext)
     messageContext;
 
-    // wired getBoats method, using boatTypeId as a parameter, and populating boats
-    @wire(getBoats, { boatTypeId: '$boatTypeId' })
+    // wired getBoats method, using boatTypeId and maxPrice as parameter, and populating boats
+    @wire(getBoats, { boatTypeId: '$boatTypeId', maxPrice: '$maxPrice' })
     wiredBoats({ error, data }) {
         if (data) {
             this.boats = data;
@@ -59,14 +60,21 @@ export default class BoatSearchResults extends LightningElement {
             this.notifyLoading(this.isLoading);
         }
     }
+
+    // getter method that returns if there are no boats, or if there is an error
+    get noBoats() {
+        return !(this.boats && this.boats.length > 0) || this.error;
+    }
     
-    // public function that updates the existing boatTypeId property
+    // public function that updates the existing boatTypeId and maxPrice property
     // uses notifyLoading
     @api
-    searchBoats(boatTypeId) {
+    searchBoats(boatTypeId,maxPrice) {
         this.isLoading = true;
         // assign boatTypeId to this.boatTypeId
         this.boatTypeId = boatTypeId;
+        // assign maxPrice to this.maxPrice
+        this.maxPrice = maxPrice;
         // call notifyLoading
         this.notifyLoading(this.isLoading);
     }

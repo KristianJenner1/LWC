@@ -11,7 +11,7 @@ public with sharing class BoatDataService
 
     // Method to get boats by boat type, Aura enabled to be called by LWC
     @AuraEnabled(cacheable=true)
-    public static List<Boat__c> getBoats(String boatTypeId) 
+    public static List<Boat__c> getBoats(String boatTypeId, Integer maxPrice) 
     {
         // Without an explicit boatTypeId, the full list of boats is desired
         String query = 'SELECT '
@@ -24,6 +24,19 @@ public with sharing class BoatDataService
         if (String.isNotBlank(boatTypeId)) 
         {
             query += ' WHERE BoatType__c = :boatTypeId';
+        }
+
+        // If the maxPrice is not null, filter by it
+        if (maxPrice != null) 
+        {
+            if (String.isNotBlank(boatTypeId)) 
+            {
+                query += ' AND Price__c <= :maxPrice';
+            } 
+            else 
+            {
+                query += ' WHERE Price__c <= :maxPrice';
+            }
         }
         
         query += ' WITH SECURITY_ENFORCED ';

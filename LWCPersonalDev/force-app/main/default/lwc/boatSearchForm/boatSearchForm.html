@@ -1,19 +1,31 @@
 <!-- Description : Search Form for boat search page, filtered by boat type -->
 <template>
-    <lightning-layout>
-        <lightning-layout-item class="slds-align-middle">
-            <!-- Create the lightning-input-field for the boat search -->
-            <lightning-combobox
-                class="slds-align-middle"
-                name="boatType"
-                label="Boat Type"
-                placeholder="All Types"
-                options={searchOptions}
-                onchange={handleSearchOptionChange}
-                value={selectedBoatTypeId}
-                variant="label-hidden">
-            </lightning-combobox>
-        </lightning-layout-item>
-    </lightning-layout>
+    <div class="slds-box slds-p-around_none slds-m-top_x-small slds-m-bottom_medium slds-m-horizontal_none">
+        <lightning-layout>
+            <lightning-layout-item class="slds-align-middle" padding="horizontal-medium">
+                <!-- Create the lightning-input-field for the boat search -->
+                <lightning-combobox
+                    class="slds-align-middle"
+                    name="boatType"
+                    label="Boat Type"
+                    placeholder="All Types"
+                    options={searchOptions}
+                    onchange={handleSearchOptionChange}
+                    value={selectedBoatTypeId}
+                    variant="label-hidden">
+                </lightning-combobox>
+            </lightning-layout-item>
+            <lightning-layout-item class="slds-align-middle" padding="horizontal-medium">
+                <lightning-slider
+                    label="Max Price"
+                    step="10000"
+                    min="0"
+                    max="1000000"
+                    value={maxPrice}
+                    onchange={handleMaxPriceChange}>
+                </lightning-slider>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
   </template>
   
