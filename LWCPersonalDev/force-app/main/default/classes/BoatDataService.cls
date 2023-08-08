@@ -134,13 +134,24 @@ public with sharing class BoatDataService
 
     // Assume this may be an API that return this data, not a SOQL query
     @AuraEnabled(cacheable=true)
-    public static String getBoatsByLocation(Decimal latitude, Decimal longitude, String boatTypeId) 
+    public static String getBoatsByLocation(Decimal latitude, Decimal longitude, String boatTypeId, Integer maxPrice) 
     {
         // Without an explicit boatTypeId, the full list is desired
         String query = 'SELECT Name, Geolocation__Latitude__s, Geolocation__Longitude__s FROM Boat__c ';
-        if (String.isNotBlank(boatTypeId)) 
+            if (String.isNotBlank(boatTypeId)) 
         {
             query += 'WHERE BoatType__c = :boatTypeId ';
+        }
+        if (maxPrice != null) 
+        {
+            if (String.isNotBlank(boatTypeId)) 
+            {
+                query += 'AND Price__c <= :maxPrice ';
+            } 
+            else 
+            {
+                query += 'WHERE Price__c <= :maxPrice ';
+            }
         }
         query += ' WITH SECURITY_ENFORCED ORDER BY DISTANCE(Geolocation__c, GEOLOCATION(:latitude, :longitude), \'mi\') LIMIT 10';
         return JSON.serialize(Database.query(query));

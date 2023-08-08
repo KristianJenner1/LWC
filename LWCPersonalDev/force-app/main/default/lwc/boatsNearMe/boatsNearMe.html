@@ -1,6 +1,7 @@
 <!-- Description: This component displays a map with boat locations -->
 <template>
     <lightning-card class="slds-is-relative">
+
         <!-- Display a spinner if isLoading is true -->
         <template if:true={isLoading}>
             <div class="slds-spinner_container">
@@ -11,6 +12,7 @@
                 </lightning-spinner>
             </div>
         </template>
+        
         <!-- Map component -->
         <template if:true={isRendered}>
             <lightning-map 
