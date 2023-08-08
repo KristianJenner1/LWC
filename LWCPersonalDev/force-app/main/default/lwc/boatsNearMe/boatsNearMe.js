@@ -38,9 +38,9 @@ export default class BoatsNearMe extends LightningElement {
     messageContext;
     
     // Add the wired method from the Apex Class
-    // Name it getBoatsByLocation, and use latitude, longitude and boatTypeId
+    // Name it getBoatsByLocation, and use latitude, longitude boatTypeId and maxPrice
     // Handle the result and calls createMapMarkers
-    @wire(getBoatsByLocation, { latitude: '$latitude', longitude: '$longitude', boatTypeId: '$boatTypeId', maxPRice: '$maxPrice' })
+    @wire(getBoatsByLocation, { latitude: '$latitude', longitude: '$longitude', boatTypeId: '$boatTypeId', maxPrice: '$maxPrice' })
     wiredBoatsJSON({error, data}) { 
         if (data) {
             // Call createMapMarkers, parse the data returned from the Apex call

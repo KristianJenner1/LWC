@@ -137,20 +137,20 @@ public with sharing class BoatDataService
     public static String getBoatsByLocation(Decimal latitude, Decimal longitude, String boatTypeId, Integer maxPrice) 
     {
         // Without an explicit boatTypeId, the full list is desired
-        String query = 'SELECT Name, Geolocation__Latitude__s, Geolocation__Longitude__s FROM Boat__c ';
-            if (String.isNotBlank(boatTypeId)) 
+        String query = 'SELECT Name, Geolocation__Latitude__s, Geolocation__Longitude__s FROM Boat__c';
+        if (String.isNotBlank(boatTypeId)) 
         {
-            query += 'WHERE BoatType__c = :boatTypeId ';
+            query += ' WHERE BoatType__c = :boatTypeId';
         }
         if (maxPrice != null) 
         {
             if (String.isNotBlank(boatTypeId)) 
             {
-                query += 'AND Price__c <= :maxPrice ';
+                query += ' AND Price__c <= :maxPrice';
             } 
             else 
             {
-                query += 'WHERE Price__c <= :maxPrice ';
+                query += ' WHERE Price__c <= :maxPrice';
             }
         }
         query += ' WITH SECURITY_ENFORCED ORDER BY DISTANCE(Geolocation__c, GEOLOCATION(:latitude, :longitude), \'mi\') LIMIT 10';
