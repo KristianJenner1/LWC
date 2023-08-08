@@ -91,6 +91,7 @@ export default class BoatsNearMe extends LightningElement {
             return {
                 title: boat.Name,
                 value: boat.Id, // required for marker selection
+                icon: 'utility:anchor',
                 location: {
                     Latitude: boat.Geolocation__Latitude__s,
                     Longitude: boat.Geolocation__Longitude__s

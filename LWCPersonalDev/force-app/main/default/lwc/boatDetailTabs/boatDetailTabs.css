@@ -1,3 +1,6 @@
 .no-boat-height {
     height: 3rem;
 }
+.boat-form-field-input {
+    padding-left: 20px;
+}

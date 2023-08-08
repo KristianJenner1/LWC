@@ -19,16 +19,14 @@
             <lightning-tab label={label.labelDetails}>
                 <lightning-card title={boatName} icon-name={detailsTabIconName} padding="around-small">
                     <!-- button to navigate to the record view page for the selected boat -->
-                    <lightning-button label={label.labelFullDetails} onclick={navigateToRecordViewPage}  slot="actions"></lightning-button>
-                    <div class="slds-m-around-small">
-                        <!-- lightning-record-view-form to display selected boat details -->
-                        <lightning-record-view-form record-id={boatId} object-api-name="Boat__c" density="compact"  padding="around-small">
-                            <lightning-output-field field-name="BoatType__c"></lightning-output-field>
-                            <lightning-output-field field-name="Length__c"></lightning-output-field>
-                            <lightning-output-field field-name="Price__c"></lightning-output-field>
-                            <lightning-output-field field-name="Description__c"></lightning-output-field>
-                        </lightning-record-view-form>
-                    </div>
+                    <lightning-button label={label.labelFullDetails} onclick={navigateToRecordViewPage} slot="actions"></lightning-button>
+                    <!-- lightning-record-view-form to display selected boat details -->
+                    <lightning-record-view-form record-id={boatId} object-api-name="Boat__c" density="compact">
+                        <lightning-output-field class="boat-form-field-input" field-name="BoatType__c"></lightning-output-field>
+                        <lightning-output-field class="boat-form-field-input" field-name="Length__c"></lightning-output-field>
+                        <lightning-output-field class="boat-form-field-input" field-name="Price__c"></lightning-output-field>
+                        <lightning-output-field class="boat-form-field-input" field-name="Description__c"></lightning-output-field>
+                    </lightning-record-view-form>
                 </lightning-card>
             </lightning-tab>
 
