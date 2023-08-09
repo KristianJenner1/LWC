@@ -6,7 +6,7 @@
         <!-- Gallery tab -->
         <lightning-tab label="Gallery">
             <!-- only show if there are boats -->
-            <template if:true={boats}>
+            <template if:false={noBoats}>
                 <!-- pagination for the gallery -->
                 <c-paginator
                     page-number={pageNumber}
