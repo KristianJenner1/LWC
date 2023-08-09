@@ -9,21 +9,27 @@ public with sharing class BoatDataService
     public static final String PRICE_TYPE = 'Price'; 
     public static final String TYPE_TYPE = 'Type'; 
 
+    // Constant to represent the number of boats to display per page
+    public static final Integer PAGE_SIZE = 10;
+
     // Method to get boats by boat type, Aura enabled to be called by LWC
     @AuraEnabled(cacheable=true)
-    public static List<Boat__c> getBoats(String boatTypeId, Integer maxPrice) 
+    public static PagedResult getBoats(String boatTypeId, Integer maxPrice, Integer pageNumber) 
     {
         // Without an explicit boatTypeId, the full list of boats is desired
-        String query = 'SELECT '
-                     + 'Name, Description__c, Geolocation__Latitude__s, '
-                     + 'Geolocation__Longitude__s, Picture__c, Contact__r.Name, '
-                     + 'BoatType__c, BoatType__r.Name, Length__c, Price__c '
-                     + 'FROM Boat__c';
+        String selectClause = 'SELECT '
+                            + 'Name, Description__c, Geolocation__Latitude__s, '
+                            + 'Geolocation__Longitude__s, Picture__c, Contact__r.Name, '
+                            + 'BoatType__c, BoatType__r.Name, Length__c, Price__c '
+                            + 'FROM Boat__c';
+        
+        // Build the WHERE clause
+        String whereClause = '';
         
         // If the boatTypeId is not blank, filter by it
         if (String.isNotBlank(boatTypeId)) 
         {
-            query += ' WHERE BoatType__c = :boatTypeId';
+            whereClause += ' WHERE BoatType__c = :boatTypeId';
         }
 
         // If the maxPrice is not null, filter by it
@@ -31,17 +37,37 @@ public with sharing class BoatDataService
         {
             if (String.isNotBlank(boatTypeId)) 
             {
-                query += ' AND Price__c <= :maxPrice';
+                whereClause += ' AND Price__c <= :maxPrice';
             } 
             else 
             {
-                query += ' WHERE Price__c <= :maxPrice';
+                whereClause += ' WHERE Price__c <= :maxPrice';
             }
         }
         
-        query += ' WITH SECURITY_ENFORCED ';
+        // Build the PagedResult object to return
+        Integer pageSize = BoatDataService.PAGE_SIZE;
+        Integer offset = (pageNumber - 1) * pageSize;
         
-        return Database.query(query);
+        PagedResult result = new PagedResult();
+
+        result.pageSize = pageSize;
+        
+        result.pageNumber = pageNumber;
+        
+        result.totalItemCount = Database.countQuery(
+            'SELECT count() FROM Boat__c ' + whereClause
+        );
+        
+        result.records = Database.query(
+            selectClause +
+            whereClause +
+            ' WITH SECURITY_ENFORCED' +
+            ' ORDER BY Name LIMIT :pageSize OFFSET :offset'
+        );
+        
+        return result;
+
     }
 
     // Method to get boats that are similar to the boat selected, Aura enabled to be called by LWC

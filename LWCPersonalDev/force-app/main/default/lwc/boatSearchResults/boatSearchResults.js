@@ -30,27 +30,31 @@ const COLS = [
 export default class BoatSearchResults extends LightningElement {
 
     // public
-    @api selectedBoatId;
+    @api selectedBoatId;  // the selected boat tile
 
-    boatTypeId = '';
-    maxPrice = 1000000;
-    boats;
-    
-    columns = COLS; // reference constant COLS, defined above, for the datatable columns
-    
-    isLoading = false;
-    error = undefined;
-    draftValues = [];
+    // private
+    boatTypeId = ''; // reactive variable holding the boat type to filter the results
+    maxPrice = 1000000;  // reactive variable holding the maximum price to filter the results
+    boats;  // array of boats returned from getBoats method 
+    pageNumber = 1; // current page in the boat earch results
+    pageSize;  // the number of items on a page
+    totalItemCount = 0;  // the total number of items matching the selection
+    columns = COLS;   // reference constant COLS, defined above, for the datatable columns
+    isLoading = false;   // variable to indicate if boats are loading
+    error = undefined; // variable to hold error information
+    draftValues = [];  // datatable draft values array
     
     // wired message context
     @wire(MessageContext)
     messageContext;
 
     // wired getBoats method, using boatTypeId and maxPrice as parameter, and populating boats
-    @wire(getBoats, { boatTypeId: '$boatTypeId', maxPrice: '$maxPrice' })
+    @wire(getBoats, { boatTypeId: '$boatTypeId', maxPrice: '$maxPrice', pageNumber: '$pageNumber' })
     wiredBoats({ error, data }) {
         if (data) {
-            this.boats = data;
+            this.boats = data.records;
+            this.pageSize = data.pageSize;
+            this.totalItemCount = data.totalItemCount;
             this.isLoading = false;
             this.notifyLoading(this.isLoading);
         } else if (error) {
@@ -100,14 +104,14 @@ export default class BoatSearchResults extends LightningElement {
         this.sendMessageService(this.selectedBoatId);
     }
     
-    // Publishes the selected boat Id on the BoatMC.
+    // publishes the selected boat Id on the BoatMC.
     sendMessageService(boatId) { 
         // explicitly pass boatId to the parameter recordId
         publish(this.messageContext, BOATMC, { recordId: boatId });
 
     }
     
-    // The handleSave method must save the changes in the Boat Editor
+    // handleSave method must save the changes in the Boat Editor
     // passing the updated fields from draftValues to the 
     // Apex method updateBoatList(Object data).
     // Show a toast message with the title
@@ -145,7 +149,7 @@ export default class BoatSearchResults extends LightningElement {
         });
     }
 
-    // Check the current value of isLoading before dispatching the doneloading or loading custom event, the events should only be fired when the value of isLoading changes.
+    // check the current value of isLoading before dispatching the doneloading or loading custom event, the events should only be fired when the value of isLoading changes.
     notifyLoading(isLoading) { 
         this.isLoading = isLoading;
         if (isLoading) {
@@ -155,5 +159,13 @@ export default class BoatSearchResults extends LightningElement {
         }
     }
 
+    // functions for handling the Previous and Next Page buttons
+    handlePreviousPage() {
+        this.pageNumber = this.pageNumber - 1;
+    }
+
+    handleNextPage() {
+        this.pageNumber = this.pageNumber + 1;
+    }
 
 }

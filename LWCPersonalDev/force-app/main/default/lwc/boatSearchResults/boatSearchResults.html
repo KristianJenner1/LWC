@@ -7,6 +7,14 @@
         <lightning-tab label="Gallery">
             <!-- only show if there are boats -->
             <template if:true={boats}>
+                <!-- pagination for the gallery -->
+                <c-paginator
+                    page-number={pageNumber}
+                    page-size={pageSize}
+                    total-item-count={totalItemCount}
+                    onprevious={handlePreviousPage}
+                    onnext={handleNextPage}
+                ></c-paginator>
                 <div class="slds-scrollable_y">
                     <!-- layout horizontally aligned to the center  -->
                     <!-- layout allowing multiple rows -->
