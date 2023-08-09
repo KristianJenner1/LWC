@@ -10,7 +10,7 @@ public with sharing class BoatDataService
     public static final String TYPE_TYPE = 'Type'; 
 
     // Constant to represent the number of boats to display per page
-    public static final Integer PAGE_SIZE = 10;
+    public static final Integer PAGE_SIZE = 12;
 
     // Method to get boats by boat type, Aura enabled to be called by LWC
     @AuraEnabled(cacheable=true)
