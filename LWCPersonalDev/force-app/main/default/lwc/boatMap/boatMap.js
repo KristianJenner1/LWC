@@ -1,6 +1,6 @@
 // imports
 import { LightningElement, api, wire } from 'lwc';
-import { subscribe, APPLICATION_SCOPE, MessageContext } from 'lightning/messageService';
+import { subscribe, unsubscribe, APPLICATION_SCOPE, MessageContext } from 'lightning/messageService';
 import { getRecord } from 'lightning/uiRecordApi';
 
 // import BOATMC from the message channel
