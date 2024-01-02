@@ -196,6 +196,21 @@ public with sharing class BoatDataService
                 query += ' WHERE Price__c <= :maxPrice';
             }
         }
+        if (maxLength != null) 
+        {
+            if (String.isNotBlank(boatTypeId)) 
+            {
+                query += ' AND Length__c <= :maxLength';
+            } 
+            else if (maxPrice != null) 
+            {
+                query += ' AND Length__c <= :maxLength';
+            } 
+            else 
+            {
+                query += ' WHERE Length__c <= :maxLength';
+            }
+        }
         query += ' WITH SECURITY_ENFORCED ORDER BY DISTANCE(Geolocation__c, GEOLOCATION(:latitude, :longitude), \'mi\') LIMIT 10';
         return JSON.serialize(Database.query(query));
     }
