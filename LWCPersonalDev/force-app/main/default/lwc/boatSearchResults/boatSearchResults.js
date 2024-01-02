@@ -21,9 +21,9 @@ const ERROR_TITLE   = 'Error';
 const ERROR_VARIANT = 'error';
 
 const COLS = [
-    { label: 'Name', fieldName: 'Name', editable: true },
-    { label: 'Length', fieldName: 'Length__c', type: 'number', editable: true },
-    { label: 'Price', fieldName: 'Price__c', type: 'currency', editable: true },
+    { label: 'Name', fieldName: 'Name', editable: true, sortable: true },
+    { label: 'Length', fieldName: 'Length__c', type: 'number', editable: true, sortable: true },
+    { label: 'Price', fieldName: 'Price__c', type: 'currency', editable: true, sortable: true },
     { label: 'Description', fieldName: 'Description__c', editable: true },
 ];
 
@@ -44,6 +44,8 @@ export default class BoatSearchResults extends LightningElement {
     isLoading = false;   // variable to indicate if boats are loading
     error = undefined; // variable to hold error information
     draftValues = [];  // datatable draft values array
+    sortDirection = 'asc';  // the current sort direction
+    sortBy = 'Name'; // the current field name being sorted
     
     // wired message context
     @wire(MessageContext)
@@ -171,4 +173,35 @@ export default class BoatSearchResults extends LightningElement {
         this.pageNumber = this.pageNumber + 1;
     }
 
+    // sorting fot the Boat Editor data table - onsort event handler
+    updateColumnSorting(event) {
+        var fieldName = event.detail.fieldName;
+        var sortDirection = event.detail.sortDirection;
+        // assign the latest attribute with the sorted column fieldName and sorted direction
+        this.sortBy = fieldName;
+        this.sortDirection = sortDirection;
+        this.sortData(this.sortBy, this.sortDirection);
+   }
+    
+    // sort method
+    sortData(fieldname, direction) {
+        // serialize the data before calling sort function
+        let parseData = JSON.parse(JSON.stringify(this.boats));
+        // Return the value stored in the field
+        let keyValue = (a) => {
+            return a[fieldname];
+        };
+        // cheking reverse direction
+        let isReverse = direction === 'asc' ? 1: -1;
+        // sorting data
+        parseData.sort((x, y) => {
+            x = keyValue(x) ? keyValue(x) : ''; // handling null values
+            y = keyValue(y) ? keyValue(y) : '';
+            // sorting values based on direction
+            return isReverse * ((x > y) - (y > x));
+        });
+        // set sorted data to data table data
+        this.boats = parseData;
+    }
+   
 }

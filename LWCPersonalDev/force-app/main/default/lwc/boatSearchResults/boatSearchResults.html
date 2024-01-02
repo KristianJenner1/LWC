@@ -54,7 +54,10 @@
                         draft-values={draftValues}
                         onsave={handleSave}
                         hide-checkbox-column="true"
-                        show-row-number-column="true">
+                        show-row-number-column="true"
+                        sorted-by={sortBy}
+                        sorted-direction={sortDirection}
+                        onsort={updateColumnSorting}>
                     </lightning-datatable>
                 </div>
             </template>
@@ -67,5 +70,6 @@
         </lightning-tab>
 
     </lightning-tabset>
+    
 </template>
   
