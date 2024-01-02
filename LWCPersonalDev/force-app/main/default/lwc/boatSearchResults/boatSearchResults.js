@@ -35,6 +35,7 @@ export default class BoatSearchResults extends LightningElement {
     // private
     boatTypeId = ''; // reactive variable holding the boat type to filter the results
     maxPrice = 1000000;  // reactive variable holding the maximum price to filter the results
+    maxLength = 100;  // reactive variable holding the maximum length to filter the results
     boats;  // array of boats returned from getBoats method 
     pageNumber = 1; // current page in the boat earch results
     pageSize;  // the number of items on a page
@@ -48,8 +49,8 @@ export default class BoatSearchResults extends LightningElement {
     @wire(MessageContext)
     messageContext;
 
-    // wired getBoats method, using boatTypeId and maxPrice as parameter, and populating boats
-    @wire(getBoats, { boatTypeId: '$boatTypeId', maxPrice: '$maxPrice', pageNumber: '$pageNumber' })
+    // wired getBoats method, using boatTypeId, maxPrice and maxLength as parameters, and populating boats
+    @wire(getBoats, { boatTypeId: '$boatTypeId', maxPrice: '$maxPrice', maxLength: '$maxLength', pageNumber: '$pageNumber' })
     wiredBoats({ error, data }) {
         if (data) {
             this.boats = data.records;
@@ -73,12 +74,14 @@ export default class BoatSearchResults extends LightningElement {
     // public function that updates the existing boatTypeId and maxPrice property
     // uses notifyLoading
     @api
-    searchBoats(boatTypeId,maxPrice) {
+    searchBoats(boatTypeId,maxPrice,maxLength) {
         this.isLoading = true;
         // assign boatTypeId to this.boatTypeId
         this.boatTypeId = boatTypeId;
         // assign maxPrice to this.maxPrice
         this.maxPrice = maxPrice;
+        // assign maxLength to this.maxLength
+        this.maxLength = maxLength;
         // call notifyLoading
         this.notifyLoading(this.isLoading);
     }

@@ -14,7 +14,7 @@ public with sharing class BoatDataService
 
     // Method to get boats by boat type, Aura enabled to be called by LWC
     @AuraEnabled(cacheable=true)
-    public static PagedResult getBoats(String boatTypeId, Integer maxPrice, Integer pageNumber) 
+    public static PagedResult getBoats(String boatTypeId, Integer maxPrice, Integer maxLength, Integer pageNumber) 
     {
         // Without an explicit boatTypeId, the full list of boats is desired
         String selectClause = 'SELECT '
@@ -42,6 +42,23 @@ public with sharing class BoatDataService
             else 
             {
                 whereClause += ' WHERE Price__c <= :maxPrice';
+            }
+        }
+
+        // If the maxLength is not null, filter by it
+        if (maxLength != null) 
+        {
+            if (String.isNotBlank(boatTypeId)) 
+            {
+                whereClause += ' AND Length__c <= :maxLength';
+            } 
+            else if (maxPrice != null) 
+            {
+                whereClause += ' AND Length__c <= :maxLength';
+            } 
+            else 
+            {
+                whereClause += ' WHERE Length__c <= :maxLength';
             }
         }
         
@@ -160,7 +177,7 @@ public with sharing class BoatDataService
 
     // Assume this may be an API that return this data, not a SOQL query
     @AuraEnabled(cacheable=true)
-    public static String getBoatsByLocation(Decimal latitude, Decimal longitude, String boatTypeId, Integer maxPrice) 
+    public static String getBoatsByLocation(Decimal latitude, Decimal longitude, String boatTypeId, Integer maxPrice, Integer maxLength) 
     {
         // Without an explicit boatTypeId, the full list is desired
         String query = 'SELECT Name, Geolocation__Latitude__s, Geolocation__Longitude__s FROM Boat__c';
@@ -194,5 +211,19 @@ public with sharing class BoatDataService
         
         update boatsForUpdate;
         return 'Success: Boats updated successfully';
+    }
+
+    // Method to get the maximum length of a boat, Aura enabled to be called by LWC
+    @AuraEnabled(cacheable=true)
+    public static Integer getMaxBoatLength() 
+    {
+        // query to return the maximum length of a boat, if no boats exist, return 100
+        Integer maxLength = Integer.valueOf( 
+            [
+                SELECT MAX(Length__c)
+                FROM Boat__c
+                WITH SECURITY_ENFORCED
+            ] [0].get('expr0'));
+        return (maxLength != null) ? maxLength : 10;
     }
 }

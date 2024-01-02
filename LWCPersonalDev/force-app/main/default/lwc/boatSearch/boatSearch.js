@@ -18,7 +18,7 @@ export default class BoatSearch extends NavigationMixin(LightningElement) {
     }
     
     // Handles search boat event
-    // This custom event comes from the boatSearchform
+    // This custom event comes from the boatSearchForm
     searchBoats(event) { 
         
         // Create variable boatTypeId and assign the value from the event detail
@@ -27,8 +27,11 @@ export default class BoatSearch extends NavigationMixin(LightningElement) {
         // Create variable maxPrice and assign the value from the event detail
         let maxPrice = event.detail.maxPrice;
 
+        // Create variable maxLength and assign the value from the event detail
+        let maxLength = event.detail.maxLength;
+
         // Call the searchBoats function from the boatSearchResults component to perform the search and show the results
-        this.template.querySelector('c-boat-search-results').searchBoats(boatTypeId,maxPrice);
+        this.template.querySelector('c-boat-search-results').searchBoats(boatTypeId,maxPrice,maxLength);
 
         // Call the handleDoneLoading function
         this.handleDoneLoading();

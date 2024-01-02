@@ -15,14 +15,26 @@
                     variant="label-hidden">
                 </lightning-combobox>
             </lightning-layout-item>
+            <!-- Slider for filtering by price -->
             <lightning-layout-item class="slds-align-middle" padding="horizontal-medium">
                 <lightning-slider
-                    label="Max Price"
+                    label="Max Price ($)"
                     step="10000"
                     min="0"
                     max="1000000"
                     value={maxPrice}
                     onchange={handleMaxPriceChange}>
+                </lightning-slider>
+            </lightning-layout-item>
+            <!-- Slider for filtering by length -->
+            <lightning-layout-item class="slds-align-middle" padding="horizontal-medium">
+                <lightning-slider
+                    label="Max Length (m)"
+                    step="1"
+                    min="0"
+                    max={maxLength.data}
+                    value={maxLength.data}
+                    onchange={handleMaxLengthChange}>
                 </lightning-slider>
             </lightning-layout-item>
         </lightning-layout>
