@@ -8,6 +8,8 @@ public with sharing class BoatDataService
     public static final String LENGTH_TYPE = 'Length'; 
     public static final String PRICE_TYPE = 'Price'; 
     public static final String TYPE_TYPE = 'Type'; 
+    public static final Integer MAX_BOAT_PRICE = 1000000; 
+    public static final Integer MAX_BOAT_LENGTH = 100; 
 
     // Constant to represent the number of boats to display per page
     public static final Integer PAGE_SIZE = 12;
@@ -232,13 +234,27 @@ public with sharing class BoatDataService
     @AuraEnabled(cacheable=true)
     public static Integer getMaxBoatLength() 
     {
-        // query to return the maximum length of a boat, if no boats exist, return 100
+        // query to return the maximum length of a boat, if no boats exist, return MAX_BOAT_LENGTH
         Integer maxLength = Integer.valueOf( 
             [
                 SELECT MAX(Length__c)
                 FROM Boat__c
                 WITH SECURITY_ENFORCED
             ] [0].get('expr0'));
-        return (maxLength != null) ? maxLength : 10;
+        return (maxLength != null) ? maxLength : MAX_BOAT_LENGTH;
+    }
+
+    // Method to get the maximum price of a boat, Aura enabled to be called by LWC
+    @AuraEnabled(cacheable=true)
+    public static Integer getMaxBoatPrice() 
+    {
+        // query to return the maximum price of a boat, if no boats exist, return MAX_BOAT_PRICE
+        Integer maxPrice = Integer.valueOf(
+            [
+                SELECT MAX(Price__c)
+                FROM Boat__c
+                WITH SECURITY_ENFORCED
+            ] [0].get('expr0'));
+        return (maxPrice != null) ? maxPrice : MAX_BOAT_PRICE;
     }
 }

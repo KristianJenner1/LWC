@@ -19,10 +19,10 @@
             <lightning-layout-item class="slds-align-middle" padding="horizontal-medium">
                 <lightning-slider
                     label="Max Price ($)"
-                    step="10000"
+                    step="1000"
                     min="0"
-                    max="1000000"
-                    value={maxPrice}
+                    max={maxPrice.data}
+                    value={maxPrice.data}
                     onchange={handleMaxPriceChange}>
                 </lightning-slider>
             </lightning-layout-item>

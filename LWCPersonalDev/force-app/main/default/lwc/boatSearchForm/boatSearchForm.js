@@ -2,6 +2,7 @@
 import { LightningElement, track, wire } from 'lwc';
 import getBoatTypes from '@salesforce/apex/BoatDataService.getBoatTypes';
 import getMaxBoatLength from '@salesforce/apex/BoatDataService.getMaxBoatLength';
+import getMaxBoatPrice from '@salesforce/apex/BoatDataService.getMaxBoatPrice';
 
 // constants
 const MAX_PRICE = 1000000;
@@ -31,6 +32,9 @@ export default class BoatSearchForm extends LightningElement {
 
     // Wire the Apex method getMaxBoatLength to populate maxLength
     @wire(getMaxBoatLength) maxLength;
+
+    // Wire the Apex method getMaxBoatPrice to populate maxPrice
+    @wire(getMaxBoatPrice) maxPrice;
     
     // Fires event that the search option has changed.
     // passes boatTypeId (value of this.selectedBoatTypeId) in the detail
@@ -41,7 +45,7 @@ export default class BoatSearchForm extends LightningElement {
         const searchEvent = new CustomEvent('search', { 
             detail: { 
                 boatTypeId: this.selectedBoatTypeId,
-                maxPrice: this.maxPrice,
+                maxPrice: this.maxPrice.data,
                 maxLength: this.maxLength.data
             } 
         });
@@ -50,12 +54,12 @@ export default class BoatSearchForm extends LightningElement {
 
     handleMaxPriceChange(event) {
         // set maxPrice to the value of the selected search option
-        this.maxPrice = event.detail.value;
+        this.maxPrice.data = event.detail.value;
         // Create the const searchEvent and dispatch this event with the selected boat type Id, this event will be handled by the parent component
         const searchEvent = new CustomEvent('search', { 
             detail: { 
                 boatTypeId: this.selectedBoatTypeId,
-                maxPrice: this.maxPrice,
+                maxPrice: this.maxPrice.data,
                 maxLength: this.maxLength.data
             } 
         });
@@ -69,7 +73,7 @@ export default class BoatSearchForm extends LightningElement {
         const searchEvent = new CustomEvent('search', { 
             detail: { 
                 boatTypeId: this.selectedBoatTypeId,
-                maxPrice: this.maxPrice,
+                maxPrice: this.maxPrice.data,
                 maxLength: this.maxLength.data
             } 
         });
