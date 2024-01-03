@@ -1,8 +1,8 @@
 <!-- Description : Search Form for boat search page, filtered by boat type -->
 <template>
-    <div class="slds-box slds-p-around_small slds-m-top_small slds-m-bottom_small slds-m-horizontal_none">
+    <div class="slds-m-top_small slds-m-bottom_small slds-m-horizontal_none">
         <lightning-layout>
-            <lightning-layout-item class="slds-align-middle" padding="horizontal-medium">
+            <lightning-layout-item class="slds-align-middle slds-p-right_medium">
                 <!-- Create the lightning-input-field for the boat search -->
                 <lightning-combobox
                     class="slds-align-middle"
@@ -16,7 +16,7 @@
                 </lightning-combobox>
             </lightning-layout-item>
             <!-- Slider for filtering by price -->
-            <lightning-layout-item class="slds-align-middle" padding="horizontal-medium">
+            <lightning-layout-item class="slds-align-middle slds-p-right_medium">
                 <lightning-slider
                     label="Max Price ($)"
                     step="1000"
@@ -27,7 +27,7 @@
                 </lightning-slider>
             </lightning-layout-item>
             <!-- Slider for filtering by length -->
-            <lightning-layout-item class="slds-align-middle" padding="horizontal-medium">
+            <lightning-layout-item class="slds-align-middle slds-p-right_medium">
                 <lightning-slider
                     label="Max Length (m)"
                     step="1"

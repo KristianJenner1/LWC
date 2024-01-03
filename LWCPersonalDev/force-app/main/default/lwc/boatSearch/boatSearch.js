@@ -13,8 +13,15 @@ export default class BoatSearch extends NavigationMixin(LightningElement) {
     }
     
     // Handles done loading event
-    handleDoneLoading() { 
+    handleDoneLoading(event) { 
         this.isLoading = false;
+        
+        // Create variable totalBoats and assign the value from the event detail
+        let totalBoats = event.detail;
+
+        // Set the totalBoats property of the boatSearchSummary component to the value passed in the doneLoading event detail
+        this.template.querySelector('c-boat-search-summary').totalBoats = totalBoats;
+
     }
     
     // Handles search boat event
