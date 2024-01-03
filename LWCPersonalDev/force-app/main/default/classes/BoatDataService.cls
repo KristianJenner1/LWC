@@ -10,13 +10,14 @@ public with sharing class BoatDataService
     public static final String TYPE_TYPE = 'Type'; 
     public static final Integer MAX_BOAT_PRICE = 1000000; 
     public static final Integer MAX_BOAT_LENGTH = 100; 
+    public static final Integer MAX_BOAT_DISTANCE = 10000;
 
     // Constant to represent the number of boats to display per page
     public static final Integer PAGE_SIZE = 12;
 
     // Method to get boats by boat type, Aura enabled to be called by LWC
     @AuraEnabled(cacheable=true)
-    public static PagedResult getBoats(String boatTypeId, Integer maxPrice, Integer maxLength, Integer pageNumber) 
+    public static PagedResult getBoats(String boatTypeId, Integer maxPrice, Integer maxLength, Integer maxDistance, Integer pageNumber) 
     {
         // Without an explicit boatTypeId, the full list of boats is desired
         String selectClause = 'SELECT '
@@ -50,17 +51,26 @@ public with sharing class BoatDataService
         // If the maxLength is not null, filter by it
         if (maxLength != null) 
         {
-            if (String.isNotBlank(boatTypeId)) 
-            {
-                whereClause += ' AND Length__c <= :maxLength';
-            } 
-            else if (maxPrice != null) 
+            if (String.isNotBlank(boatTypeId) || maxPrice != null) 
             {
                 whereClause += ' AND Length__c <= :maxLength';
             } 
             else 
             {
                 whereClause += ' WHERE Length__c <= :maxLength';
+            }
+        }
+
+        // If the maxDistance is not null, filter by it
+        if (maxDistance != null) 
+        {
+            if (String.isNotBlank(boatTypeId) || maxPrice != null || maxLength != null) 
+            {
+                whereClause += ' AND DISTANCE(Geolocation__c, GEOLOCATION(:latitude, :longitude), \'km\') <= :maxDistance';
+            } 
+            else 
+            {
+                whereClause += ' WHERE DISTANCE(Geolocation__c, GEOLOCATION(:latitude, :longitude), \'km\') <= :maxDistance';
             }
         }
         
@@ -213,7 +223,7 @@ public with sharing class BoatDataService
                 query += ' WHERE Length__c <= :maxLength';
             }
         }
-        query += ' WITH SECURITY_ENFORCED ORDER BY DISTANCE(Geolocation__c, GEOLOCATION(:latitude, :longitude), \'mi\') LIMIT 10';
+        query += ' WITH SECURITY_ENFORCED ORDER BY DISTANCE(Geolocation__c, GEOLOCATION(:latitude, :longitude), \'km\') LIMIT 10';
         return JSON.serialize(Database.query(query));
     }
 
@@ -257,4 +267,49 @@ public with sharing class BoatDataService
             ] [0].get('expr0'));
         return (maxPrice != null) ? maxPrice : MAX_BOAT_PRICE;
     }
+
+    // Method to get the maximum distance of a boat from the user, Aura enabled to be called by LWC
+    @AuraEnabled(cacheable=true)
+    public static Integer getMaxBoatDistanceFromUser(Decimal userLatitude, Decimal userLongitude) 
+    {
+        system.debug(userLatitude);
+        system.debug(userLongitude);
+
+        // query the boats ordered by distance from the user, and return the distance of the furthest boat
+        List<Boat__c> boats = [
+            SELECT Id, Name, Geolocation__Latitude__s, Geolocation__Longitude__s
+            FROM Boat__c
+            WITH SECURITY_ENFORCED
+            ORDER BY DISTANCE(Geolocation__c, GEOLOCATION(:userLatitude, :userLongitude), 'km') DESC
+        ];
+
+        system.debug(boats[0].Geolocation__Latitude__s);
+        system.debug(boats[0].Geolocation__Longitude__s);
+        
+        
+        // using Haversine formula to calculate distance the geolocation and the user location
+        Decimal maxDistance = haversineFormula(boats[0].Geolocation__Latitude__s, boats[0].Geolocation__Longitude__s, userLatitude, userLongitude);
+        
+        return (maxDistance != null) ? maxDistance.intValue() : MAX_BOAT_PRICE;
+
+    }
+
+    // Method to get the distance between two points using the Haversine formula, used to calculate the distance between the furthest boat (point 1) and the user (point 2)
+    private static Decimal haversineFormula(Decimal lat1, Decimal lon1, Decimal lat2, Decimal lon2) 
+    {
+        Decimal R = 6371; // Radius of the earth in km
+        Decimal dLat = deg2rad(lat2-lat1);  // deg2rad below
+        Decimal dLon = deg2rad(lon2-lon1); 
+        Decimal a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2); 
+        Decimal c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+        Decimal d = R * c; // Distance in km
+        return d;
+    }
+
+    // Method to convert degrees to radians, used in the Haversine formula
+    private static Decimal deg2rad(Decimal deg) 
+    {
+        return deg * (Math.PI/180);
+    }
+
 }

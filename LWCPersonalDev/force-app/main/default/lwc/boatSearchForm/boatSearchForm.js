@@ -3,9 +3,7 @@ import { LightningElement, track, wire } from 'lwc';
 import getBoatTypes from '@salesforce/apex/BoatDataService.getBoatTypes';
 import getMaxBoatLength from '@salesforce/apex/BoatDataService.getMaxBoatLength';
 import getMaxBoatPrice from '@salesforce/apex/BoatDataService.getMaxBoatPrice';
-
-// constants
-const MAX_PRICE = 1000000;
+import getMaxBoatDistanceFromUser from '@salesforce/apex/BoatDataService.getMaxBoatDistanceFromUser';
 
 export default class BoatSearchForm extends LightningElement {
     
@@ -13,7 +11,6 @@ export default class BoatSearchForm extends LightningElement {
     selectedBoatTypeId = '';
     error = undefined;
     searchOptions;
-    maxPrice = MAX_PRICE;
     
     // Wire the Apex method getBoatTypes to populate searchOptions
     @wire(getBoatTypes) 
@@ -35,6 +32,10 @@ export default class BoatSearchForm extends LightningElement {
 
     // Wire the Apex method getMaxBoatPrice to populate maxPrice
     @wire(getMaxBoatPrice) maxPrice;
+
+    // Wire the Apex method getMaxBoatDistanceFromUser to populate maxDistance, passing the geolocation of the user
+    @wire(getMaxBoatDistanceFromUser ,{ userLatitude : 0, userLongitude : 0 }) maxDistance;
+
     
     // Fires event that the search option has changed.
     // passes boatTypeId (value of this.selectedBoatTypeId) in the detail

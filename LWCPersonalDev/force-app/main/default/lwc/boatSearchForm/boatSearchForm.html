@@ -37,6 +37,17 @@
                     onchange={handleMaxLengthChange}>
                 </lightning-slider>
             </lightning-layout-item>
+            <!-- Slider for filtering by distance -->
+            <lightning-layout-item class="slds-align-middle slds-p-right_medium">
+                <lightning-slider
+                    label="Max Distance (km)"
+                    step="10"
+                    min="0"
+                    max={maxDistance.data}
+                    value={maxDistance.data}
+                    onchange={handleMaxDistanceChange}>
+                </lightning-slider>
+            </lightning-layout-item>
         </lightning-layout>
     </div>
   </template>
