@@ -45,7 +45,15 @@
         <lightning-tab label="Boat Editor">
             <!-- Scrollable div and lightning datatable go here -->
             <template if:true={boats}>
-                <div class="slds-scrollable_y">
+                <!-- pagination for the Boat Editor table -->
+                <c-paginator
+                    page-number={pageNumber}
+                    page-size={pageSize}
+                    total-item-count={totalItemCount}
+                    onprevious={handlePreviousPage}
+                    onnext={handleNextPage}
+                ></c-paginator>
+                <div class="slds-scrollable_y slds-p-vertical_small">
                     <!-- lightning-datatable to display the boats -->
                     <lightning-datatable
                         key-field="Id"

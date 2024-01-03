@@ -51,7 +51,7 @@ export default class BoatSearchResults extends LightningElement {
     @wire(MessageContext)
     messageContext;
 
-    // wired getBoats method, using boatTypeId, maxPrice and maxLength as parameters, and populating boats
+    // wired getBoats method, using boatTypeId, maxPrice and maxLength as parameters, and populating boats, these parameters are exposed as reactive variables so when they change the wire service will be invoked again 
     @wire(getBoats, { boatTypeId: '$boatTypeId', maxPrice: '$maxPrice', maxLength: '$maxLength', pageNumber: '$pageNumber' })
     wiredBoats({ error, data }) {
         if (data) {
