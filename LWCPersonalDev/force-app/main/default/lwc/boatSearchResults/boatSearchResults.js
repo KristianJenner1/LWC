@@ -73,7 +73,7 @@ export default class BoatSearchResults extends LightningElement {
         return !(this.boats && this.boats.length > 0) || this.error;
     }
     
-    // public function that updates the existing boatTypeId and maxPrice property
+    // public function that updates the existing boatTypeId and maxPrice property, causing the wire method to be invoked
     // uses notifyLoading
     @api
     searchBoats(boatTypeId,maxPrice,maxLength) {
@@ -101,7 +101,7 @@ export default class BoatSearchResults extends LightningElement {
         this.isLoading = false;
         this.notifyLoading(this.isLoading);
     }
-    
+
     // this function must update selectedBoatId and call sendMessageService
     updateSelectedTile(event) { 
         this.selectedBoatId = event.detail.boatId;
@@ -160,7 +160,8 @@ export default class BoatSearchResults extends LightningElement {
         if (isLoading) {
             this.dispatchEvent(new CustomEvent('loading'));
         } else {
-            this.dispatchEvent(new CustomEvent('doneloading'));
+            // dispatch event doneloading with totalItemCount
+            this.dispatchEvent(new CustomEvent('doneloading', { detail: this.totalItemCount }));
         }
     }
 
@@ -202,6 +203,15 @@ export default class BoatSearchResults extends LightningElement {
         });
         // set sorted data to data table data
         this.boats = parseData;
+    }
+
+    // selectBoat event handler
+    handleBoatSelection(event) {
+        // set selectedBoatId to the Id of the boat that was clicked
+        this.selectedBoatId = event.detail.config.value;
+        
+        // call sendMessageService and pass the boatId as a parameter
+        this.sendMessageService(this.selectedBoatId);
     }
    
 }
