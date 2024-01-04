@@ -1,6 +1,7 @@
 // imports
 import { LightningElement } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class BoatSearch extends NavigationMixin(LightningElement) {
 
@@ -37,8 +38,17 @@ export default class BoatSearch extends NavigationMixin(LightningElement) {
         // Create variable maxLength and assign the value from the event detail
         let maxLength = event.detail.maxLength;
 
+        // Create variable maxDistance and assign the value from the event detail
+        let maxDistance = event.detail.maxDistance;
+
+        // Create variable userLatitude and assign the value from the event detail
+        let userLatitude = event.detail.userLatitude;
+
+        // Create variable userLongitude and assign the value from the event detail
+        let userLongitude = event.detail.userLongitude;
+
         // Call the searchBoats function from the boatSearchResults component to perform the search and show the results
-        this.template.querySelector('c-boat-search-results').searchBoats(boatTypeId,maxPrice,maxLength);
+        this.template.querySelector('c-boat-search-results').searchBoats(boatTypeId,maxPrice,maxLength,maxDistance,userLatitude,userLongitude);
 
         // Call the handleDoneLoading function
         this.handleDoneLoading();

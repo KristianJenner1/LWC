@@ -36,10 +36,13 @@ export default class BoatSearchResults extends LightningElement {
     boatTypeId = ''; // reactive variable holding the boat type to filter the results
     maxPrice = 1000000;  // reactive variable holding the maximum price to filter the results
     maxLength = 100;  // reactive variable holding the maximum length to filter the results
+    maxDistance = 1000000;  // reactive variable holding the user's maximum distance from a boat to filter the results
+    userLatitude = 0;  // reactive variable holding the user's latitude
+    userLongitude = 0;  // reactive variable holding the user's longitude
     boats;  // array of boats returned from getBoats method 
     pageNumber = 1; // current page in the boat earch results
     pageSize;  // the number of items on a page
-    totalItemCount = 0;  // the total number of items matching the selection
+    totalItemCount = 0;  // the total number of items (boats) matching the selection
     columns = COLS;   // reference constant COLS, defined above, for the datatable columns
     isLoading = false;   // variable to indicate if boats are loading
     error = undefined; // variable to hold error information
@@ -51,8 +54,8 @@ export default class BoatSearchResults extends LightningElement {
     @wire(MessageContext)
     messageContext;
 
-    // wired getBoats method, using boatTypeId, maxPrice and maxLength as parameters, and populating boats, these parameters are exposed as reactive variables so when they change the wire service will be invoked again 
-    @wire(getBoats, { boatTypeId: '$boatTypeId', maxPrice: '$maxPrice', maxLength: '$maxLength', pageNumber: '$pageNumber' })
+    // wired getBoats method, using boatTypeId, maxPrice, maxLength and the users location as parameters, and populating boats, these parameters are exposed as reactive variables so when they change the wire service will be invoked again 
+    @wire(getBoats, { boatTypeId: '$boatTypeId', maxPrice: '$maxPrice', maxLength: '$maxLength', maxDistance: '$maxDistance', pageNumber: '$pageNumber', latitude: '$userLatitude', longitude: '$userLongitude' })
     wiredBoats({ error, data }) {
         if (data) {
             this.boats = data.records;
@@ -65,6 +68,14 @@ export default class BoatSearchResults extends LightningElement {
             this.error = error;
             this.isLoading = false;
             this.notifyLoading(this.isLoading);
+            // fire error toast
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: ERROR_TITLE,
+                    message: 'An error has occured when calling the getBoats Apex method',
+                    variant: ERROR_VARIANT
+                })
+            );
         }
     }
 
@@ -73,10 +84,10 @@ export default class BoatSearchResults extends LightningElement {
         return !(this.boats && this.boats.length > 0) || this.error;
     }
     
-    // public function that updates the existing boatTypeId and maxPrice property, causing the wire method to be invoked
+    // public function that updates the existing Boat search properties (boatTypeId, maxPrice, etc), causing the wire method to be invoked
     // uses notifyLoading
     @api
-    searchBoats(boatTypeId,maxPrice,maxLength) {
+    searchBoats(boatTypeId,maxPrice,maxLength,maxDistance,userLatitude,userLongitude) {
         this.isLoading = true;
         // assign boatTypeId to this.boatTypeId
         this.boatTypeId = boatTypeId;
@@ -84,6 +95,12 @@ export default class BoatSearchResults extends LightningElement {
         this.maxPrice = maxPrice;
         // assign maxLength to this.maxLength
         this.maxLength = maxLength;
+        // assign maxDistance to this.maxDistance
+        this.maxDistance = maxDistance;
+        // assign userLatitude to this.userLatitude
+        this.userLatitude = userLatitude;
+        // assign userLongitude to this.userLongitude
+        this.userLongitude = userLongitude;
         // call notifyLoading
         this.notifyLoading(this.isLoading);
     }

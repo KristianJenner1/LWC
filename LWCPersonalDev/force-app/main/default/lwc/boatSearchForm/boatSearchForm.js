@@ -1,5 +1,5 @@
 // imports
-import { LightningElement, track, wire } from 'lwc';
+import { LightningElement, api, wire } from 'lwc';
 import getBoatTypes from '@salesforce/apex/BoatDataService.getBoatTypes';
 import getMaxBoatLength from '@salesforce/apex/BoatDataService.getMaxBoatLength';
 import getMaxBoatPrice from '@salesforce/apex/BoatDataService.getMaxBoatPrice';
@@ -11,7 +11,10 @@ export default class BoatSearchForm extends LightningElement {
     selectedBoatTypeId = '';
     error = undefined;
     searchOptions;
-    
+    isRendered;     // used to track whether this component has rendered or not
+    latitude = 0;   // default Latitude
+    longitude = 0;  // default Longitude
+
     // Wire the Apex method getBoatTypes to populate searchOptions
     @wire(getBoatTypes) 
     boatTypes({ error, data }) {
@@ -34,9 +37,28 @@ export default class BoatSearchForm extends LightningElement {
     @wire(getMaxBoatPrice) maxPrice;
 
     // Wire the Apex method getMaxBoatDistanceFromUser to populate maxDistance, passing the geolocation of the user
-    @wire(getMaxBoatDistanceFromUser ,{ userLatitude : 0, userLongitude : 0 }) maxDistance;
+    @wire(getMaxBoatDistanceFromUser ,{ userLatitude : '$latitude', userLongitude : '$longitude' }) maxDistance;
 
+    // Controls the isRendered property
+    // Calls getLocationFromBrowser()
+    renderedCallback() { 
+        if (!this.isRendered) {
+            this.getLocationFromBrowser();
+        }
+        this.isRendered = true;
+    }
     
+    // Gets the location from the Browser
+    // position => {latitude and longitude}
+    getLocationFromBrowser() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                this.latitude = position.coords.latitude;
+                this.longitude = position.coords.longitude;
+            });
+        }
+    }
+
     // Fires event that the search option has changed.
     // passes boatTypeId (value of this.selectedBoatTypeId) in the detail
     handleSearchOptionChange(event) {
@@ -47,7 +69,10 @@ export default class BoatSearchForm extends LightningElement {
             detail: { 
                 boatTypeId: this.selectedBoatTypeId,
                 maxPrice: this.maxPrice.data,
-                maxLength: this.maxLength.data
+                maxLength: this.maxLength.data,
+                maxDistance: this.maxDistance.data,
+                userLatitude: this.latitude,
+                userLongitude: this.longitude
             } 
         });
         this.dispatchEvent(searchEvent);
@@ -61,7 +86,10 @@ export default class BoatSearchForm extends LightningElement {
             detail: { 
                 boatTypeId: this.selectedBoatTypeId,
                 maxPrice: this.maxPrice.data,
-                maxLength: this.maxLength.data
+                maxLength: this.maxLength.data,
+                maxDistance: this.maxDistance.data,
+                userLatitude: this.latitude,
+                userLongitude: this.longitude
             } 
         });
         this.dispatchEvent(searchEvent);
@@ -75,7 +103,27 @@ export default class BoatSearchForm extends LightningElement {
             detail: { 
                 boatTypeId: this.selectedBoatTypeId,
                 maxPrice: this.maxPrice.data,
-                maxLength: this.maxLength.data
+                maxLength: this.maxLength.data,
+                maxDistance: this.maxDistance.data,
+                userLatitude: this.latitude,
+                userLongitude: this.longitude
+            } 
+        });
+        this.dispatchEvent(searchEvent);
+    }
+
+    handleMaxDistanceChange(event) {
+        // set maxDistance to the value of the selected search option
+        this.maxDistance.data = event.detail.value;
+        // Create the const searchEvent and dispatch this event with the selected boat type Id, this event will be handled by the parent component
+        const searchEvent = new CustomEvent('search', { 
+            detail: { 
+                boatTypeId: this.selectedBoatTypeId,
+                maxPrice: this.maxPrice.data,
+                maxLength: this.maxLength.data,
+                maxDistance: this.maxDistance.data,
+                userLatitude: this.latitude,
+                userLongitude: this.longitude
             } 
         });
         this.dispatchEvent(searchEvent);

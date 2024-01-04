@@ -17,7 +17,7 @@ public with sharing class BoatDataService
 
     // Method to get boats by boat type, Aura enabled to be called by LWC
     @AuraEnabled(cacheable=true)
-    public static PagedResult getBoats(String boatTypeId, Integer maxPrice, Integer maxLength, Integer maxDistance, Integer pageNumber) 
+    public static PagedResult getBoats(String boatTypeId, Integer maxPrice, Integer maxLength, Integer maxDistance, Integer pageNumber, Double latitude, Double longitude) 
     {
         // Without an explicit boatTypeId, the full list of boats is desired
         String selectClause = 'SELECT '
@@ -66,11 +66,11 @@ public with sharing class BoatDataService
         {
             if (String.isNotBlank(boatTypeId) || maxPrice != null || maxLength != null) 
             {
-                whereClause += ' AND DISTANCE(Geolocation__c, GEOLOCATION(:latitude, :longitude), \'km\') <= :maxDistance';
+                whereClause += ' AND DISTANCE(Geolocation__c, GEOLOCATION(0, 0), \'km\') < :maxDistance';
             } 
             else 
             {
-                whereClause += ' WHERE DISTANCE(Geolocation__c, GEOLOCATION(:latitude, :longitude), \'km\') <= :maxDistance';
+                whereClause += ' WHERE DISTANCE(Geolocation__c, GEOLOCATION(0, 0), \'km\') < :maxDistance';
             }
         }
         
@@ -272,9 +272,6 @@ public with sharing class BoatDataService
     @AuraEnabled(cacheable=true)
     public static Integer getMaxBoatDistanceFromUser(Decimal userLatitude, Decimal userLongitude) 
     {
-        system.debug(userLatitude);
-        system.debug(userLongitude);
-
         // query the boats ordered by distance from the user, and return the distance of the furthest boat
         List<Boat__c> boats = [
             SELECT Id, Name, Geolocation__Latitude__s, Geolocation__Longitude__s
@@ -282,10 +279,6 @@ public with sharing class BoatDataService
             WITH SECURITY_ENFORCED
             ORDER BY DISTANCE(Geolocation__c, GEOLOCATION(:userLatitude, :userLongitude), 'km') DESC
         ];
-
-        system.debug(boats[0].Geolocation__Latitude__s);
-        system.debug(boats[0].Geolocation__Longitude__s);
-        
         
         // using Haversine formula to calculate distance the geolocation and the user location
         Decimal maxDistance = haversineFormula(boats[0].Geolocation__Latitude__s, boats[0].Geolocation__Longitude__s, userLatitude, userLongitude);
