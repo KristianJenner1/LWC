@@ -189,7 +189,7 @@ public with sharing class BoatDataService
 
     // Assume this may be an API that return this data, not a SOQL query
     @AuraEnabled(cacheable=true)
-    public static String getBoatsByLocation(Decimal latitude, Decimal longitude, String boatTypeId, Integer maxPrice, Integer maxLength) 
+    public static String getBoatsByLocation(Decimal latitude, Decimal longitude, String boatTypeId, Integer maxPrice, Integer maxLength, Integer maxDistance) 
     {
         // Without an explicit boatTypeId, the full list is desired
         String query = 'SELECT Name, Geolocation__Latitude__s, Geolocation__Longitude__s FROM Boat__c';
@@ -197,6 +197,7 @@ public with sharing class BoatDataService
         {
             query += ' WHERE BoatType__c = :boatTypeId';
         }
+        // If the maxPrice is not null, filter by it
         if (maxPrice != null) 
         {
             if (String.isNotBlank(boatTypeId)) 
@@ -208,6 +209,7 @@ public with sharing class BoatDataService
                 query += ' WHERE Price__c <= :maxPrice';
             }
         }
+        // If the maxLength is not null, filter by it
         if (maxLength != null) 
         {
             if (String.isNotBlank(boatTypeId)) 
@@ -223,7 +225,20 @@ public with sharing class BoatDataService
                 query += ' WHERE Length__c <= :maxLength';
             }
         }
-        query += ' WITH SECURITY_ENFORCED ORDER BY DISTANCE(Geolocation__c, GEOLOCATION(:latitude, :longitude), \'km\') LIMIT 10';
+        // If the maxDistance is not null, filter by it
+        if (maxDistance != null) 
+        {
+            if (String.isNotBlank(boatTypeId) || maxPrice != null || maxLength != null) 
+            {
+                query += ' AND DISTANCE(Geolocation__c, GEOLOCATION(0, 0), \'km\') < :maxDistance';
+            } 
+            else 
+            {
+                query += ' WHERE DISTANCE(Geolocation__c, GEOLOCATION(0, 0), \'km\') < :maxDistance';
+            }
+        }
+
+        query += ' WITH SECURITY_ENFORCED ORDER BY DISTANCE(Geolocation__c, GEOLOCATION(:latitude, :longitude), \'km\')';
         return JSON.serialize(Database.query(query));
     }
 
