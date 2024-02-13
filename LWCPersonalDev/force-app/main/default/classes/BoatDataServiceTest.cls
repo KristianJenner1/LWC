@@ -13,14 +13,14 @@ public with sharing class BoatDataServiceTest {
         System.assertEquals(false, boatTypes.isEmpty(),'The there are no Boat Type records.');
     
         String boatTypeId = boatTypes.get(0).Id;
-        List<Boat__c> boatsToTest = (List<Boat__c>) BoatDataService.getBoats(boatTypeId,1000000,100,1).records;
+        List<Boat__c> boatsToTest = (List<Boat__c>) BoatDataService.getBoats(boatTypeId,1000000,100,100000,1,0,0).records;
         List<Boat__c> boatsWithIdExpected = [SELECT Id FROM Boat__c WHERE BoatType__c = :boatTypeId  limit 12];
         System.assertEquals(boatsWithIdExpected.size(), boatsToTest.size(), 'The boat query did not return the right about of boats');
     }
 
     @isTest
     static void testGetBoatsWithoutBoatId(){
-        List<Boat__c> boatsToTest = (List<Boat__c>) BoatDataService.getBoats('',1000000,100,1).records;
+        List<Boat__c> boatsToTest = (List<Boat__c>) BoatDataService.getBoats('',1000000,100,100000,1,0,0).records;
         List<Boat__c> boatsWithIdExpected = [SELECT Id FROM Boat__c limit 12];
         System.assertEquals(boatsWithIdExpected.size(), boatsToTest.size(), 'The boat query did not return the right about of boats');
 
@@ -56,14 +56,15 @@ public with sharing class BoatDataServiceTest {
         System.assertEquals(boatsByPriceExpected.size(), boatsByPrice.size(), 'The query did not return the expected similar boats by Price.');
     }
 
+    /* need to updte this test method - unreliable */
     @isTest
     static void testGetSimilarBoatsByType(){
         List<BoatType__c> boatTypes = BoatDataService.getBoatTypes();
         System.assertEquals(false, boatTypes.isEmpty(),'The there are no Boat Type records.');
     
         String boatTypeId = boatTypes.get(0).Id;
-        List<Boat__c> boatsWithTypeId = (List<Boat__c>) BoatDataService.getBoats(boatTypeId,1000000,100,1).records;
-        System.assertEquals(false, boatsWithTypeId.isEmpty(), 'There are no botes with specified boat Id');
+        List<Boat__c> boatsWithTypeId = (List<Boat__c>) BoatDataService.getBoats(boatTypeId,1000000,100,100000,1,0,0).records;
+        System.assertEquals(false, boatsWithTypeId.isEmpty(), 'There are no boats with specified boat Id');
         
         List<Boat__c> boatsByTYPE =  BoatDataService.getSimilarBoats(boatsWithTypeId.get(0).Id,  BoatDataService.TYPE_TYPE);
         System.assertEquals(boatsWithTypeId.size() - 1, boatsByTYPE.size(), 'The similar boats by type query did not return the right amount.');
@@ -94,7 +95,7 @@ public with sharing class BoatDataServiceTest {
         List<Boat__c> boat = [SELECT Id, Geolocation__Latitude__s, Geolocation__Longitude__s,BoatType__r.Id FROM Boat__c limit 1];
         System.assertEquals(1, boat.size(), 'There are no boats inserted.');
 
-        String locationSerial = BoatDataService.getBoatsByLocation(boat.get(0).Geolocation__Latitude__s, boat.get(0).Geolocation__Longitude__s, boat.get(0).BoatType__r.Id, null, null);
+        String locationSerial = BoatDataService.getBoatsByLocation(boat.get(0).Geolocation__Latitude__s, boat.get(0).Geolocation__Longitude__s, boat.get(0).BoatType__r.Id, null, null, null);
         List<Object> boatsByLocation = (List<Object>)JSON.deserializeUntyped(locationSerial);
         List<Boat__c> boatsExpected = [SELECT Id FROM Boat__c WHERE BoatType__c = :boat.get(0).BoatType__r.Id ORDER BY DISTANCE(Geolocation__c, GEOLOCATION(:boat.get(0).Geolocation__Latitude__s, :boat.get(0).Geolocation__Longitude__s), 'mi') LIMIT 10];
         System.assertEquals(boatsExpected.size(), boatsByLocation.size(), 'The Boats were not queried correctly depending on their localization.');
